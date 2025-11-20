@@ -61,3 +61,44 @@ app.include_router(tokens_router, prefix="/api/tokens", tags=["tokens"])
 @app.get("/healthz")
 def healthz():
     return {"status": "ok"}
+
+
+########Agents
+
+# controller/api/agents.py
+from fastapi import APIRouter, HTTPException, Header
+import os
+
+agents_router = APIRouter()
+
+@agents_router.get("/")
+async def get_agents(x_admin_token: str = Header(...)):
+    print("=== AGENTS API CALLED ===")
+    print(f"Token received: {x_admin_token}")
+    
+    expected_token = os.environ.get("ADMIN_TOKEN")
+    if not expected_token:
+        raise HTTPException(status_code=500, detail="ADMIN_TOKEN not configured")
+    
+    if x_admin_token != expected_token:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    # Return test data
+    return {
+        "message": "success",
+        "data": [
+            {
+                "agent_name": "test-agent-1",
+                "hostname": "localhost", 
+                "port": 8080,
+                "status": "online",
+                "last_seen": "2023-01-01T00:00:00Z"
+            }
+        ]
+    }
+
+# Add other agent endpoints as needed
+@agents_router.post("/")
+async def create_agent(x_admin_token: str = Header(...)):
+    # Your create agent logic
+    return {"message": "Agent created"}
