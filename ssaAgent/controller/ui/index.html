@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORC PRO Enterprise Dashboard</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <!-- Tabbed Navigation -->
+    <div class="tab-container">
+        <div class="logo">ORC PRO Enterprise</div>
+        <div class="tabs">
+            <button class="tab active" onclick="showView('dashboard')">
+                📊 Dashboard
+            </button>
+            <button class="tab" onclick="showView('workflows')">
+                📄 Workflows
+            </button>
+            <button class="tab" onclick="showView('agents')">
+                🧩 Agents
+            </button>
+            <button class="tab" onclick="showView('builder')">
+                ⚙️ Workflow Builder
+            </button>
+            <button class="tab" onclick="showView('register_agent')">
+                ➕ Register Agent
+            </button>
+        </div>
+        <div class="theme-selector">
+            <label for="themePicker">Theme:</label>
+            <select id="themePicker" onchange="changeTheme(this.value)">
+                <option value="blue">Blue</option>
+                <option value="purple">Purple</option>
+                <option value="green">Green</option>
+                <option value="orange">Orange</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div id="content">
+        <section id="dashboard" class="view active">
+            <!-- Loaded from ui/dashboard/dashboard.html -->
+        </section>
+
+        <section id="workflows" class="view">
+            <!-- Loaded from ui/workflows/workflows.html -->
+        </section>
+
+        <section id="agents" class="view">
+            <!-- Loaded from ui/agents/agents.html -->
+        </section>
+
+        <section id="builder" class="view">
+            <!-- Loaded from ui/builder/builder.html -->
+        </section>
+
+        <section id="register_agent" class="view">
+            <!-- Loaded from ui/register_agent/register_agent.html -->
+        </section>
+    </div>
+
+    <script src="js/theme.js"></script>
+    <script src="js/api/client.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

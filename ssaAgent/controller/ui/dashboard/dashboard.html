@@ -1,0 +1,28 @@
+<main class="dashboard-main">
+    <h1>Enterprise Dashboard</h1>
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-title">Active Workflows</div>
+            <div class="kpi-value" id="activeWorkflowsCount">--</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Running Agents</div>
+            <div class="kpi-value" id="runningAgentsCount">--</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Tasks Completed</div>
+            <div class="kpi-value" id="tasksCompletedCount">--</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Success Rate</div>
+            <div class="kpi-value" id="successRate">--</div>
+        </div>
+    </div>
+    <button onclick="refreshDashboard()">Refresh</button>
+    <div class="recent-activity">
+        <h3>Recent Activity</h3>
+        <div id="activityList">
+            <div class="activity-item">Loading activities...</div>
+        </div>
+    </div>
+</main>
