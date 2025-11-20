@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+import uvicorn
+from fastapi import FastAPI
+
+app = FastAPI()
+
+# Direct API routes - no UI, no mounts
+@app.get("/api/agents/")
+async def get_agents():
+    return {"message": "Agents endpoint working"}
+
+@app.get("/api/workflows/")
+async def get_workflows():
+    return {"message": "Workflows endpoint working"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "working"}
+
+# Print all routes
+@app.on_event("startup")
+async def startup():
+    print("=== REGISTERED ROUTES ===")
+    for route in app.routes:
+        if hasattr(route, 'path'):
+            methods = getattr(route, 'methods', ['ANY'])
+            print(f"{list(methods)} {route.path}")
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
