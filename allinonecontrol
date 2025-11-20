@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+import os
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List
+import uuid
+from datetime import datetime
+
+app = FastAPI(title="Orchestration Controller", redirect_slashes=True)
+
+# Mount UI
+UI_DIR = os.path.join(os.path.dirname(__file__), "ui")
+app.mount("/", StaticFiles(directory=UI_DIR, html=True), name="ui")
+
+# Add CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# In-memory storage
+agents_db = []
+workflows_db = []
+
+# Models
+class Agent(BaseModel):
+    name: str
+    host: str
+    port: int
+
+class Workflow(BaseModel):
+    script_id: str
+    requestor: str
+    targets: List[str]
+    reason: str
+
+# API Routes
+@app.get("/api/agents")
+async def get_agents():
+    return agents_db
+
+@app.post("/api/agents")
+async def create_agent(agent: Agent):
+    agent_data = agent.dict()
+    agent_data["id"] = str(uuid.uuid4())
+    agent_data["status"] = "online"
+    agent_data["last_seen"] = datetime.now()
+    agents_db.append(agent_data)
+    return agent_data
+
+@app.get("/api/workflows")
+async def get_workflows():
+    return workflows_db
+
+@app.post("/api/workflows")
+async def create_workflow(workflow: Workflow):
+    workflow_data = workflow.dict()
+    workflow_data["id"] = str(uuid.uuid4())
+    workflow_data["status"] = "pending"
+    workflow_data["created_at"] = datetime.now()
+    workflows_db.append(workflow_data)
+    return workflow_data
+
+@app.get("/health")
+async def health_check():
+    return {"status": "running"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
