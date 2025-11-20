@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Register Agent</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<style>
+body{background:#0f172a;color:#e5e7eb;font-family:sans-serif;padding:30px;}
+.card{background:#1e293b;padding:20px;border-radius:10px;max-width:500px;margin:auto;
+      animation:fadeIn .4s ease-out;}
+input,textarea{width:100%;background:#0f172a;color:#e5e7eb;border:1px solid #334155;
+      padding:8px;border-radius:6px;}
+button{background:#38bdf8;color:#0f172a;padding:10px 16px;border-radius:6px;border:none;
+       cursor:pointer;margin-top:10px;}
+button:hover{background:#0ea5e9;}
+h1{text-align:center;margin-bottom:20px;}
+#banner{display:none;margin:15px 0;padding:10px;border-radius:6px;animation:slideDown .3s;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:none;}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:none;}}
+</style>
+</head>
+
+<body>
+<a href="/ui" style="color:#38bdf8;text-decoration:none;">← Back to Dashboard</a>
+<div id="banner"></div>
+
+<div class="card">
+<h1>Register Agent</h1>
+
+<label>Agent Name</label>
+<input id="agentName"/><br><br>
+
+<label>Hostname</label>
+<input id="agentHost" placeholder="server123.example.com or 10.10.1.15"/><br><br>
+
+<label>Port</label>
+<input id="agentPort" type="number" placeholder="5000"/><br><br>
+
+<label>Metadata (JSON)</label>
+<textarea id="metadata" style="height:120px;"></textarea><br>
+
+<button onclick="registerAgent()">Register Agent</button>
+
+</div>
+
+<script>
+const API_BASE = window.location.origin;
+
+async function registerAgent(){
+  const banner=document.getElementById('banner');
+  const name=document.getElementById('agentName').value.trim();
+  const host=document.getElementById('agentHost').value.trim();
+  const port=parseInt(document.getElementById('agentPort').value.trim());
+  let metadata=document.getElementById('metadata').value;
+
+  // validation
+  if(!name){
+    banner.style.display='block';
+    banner.style.background='#7f1d1d';
+    banner.textContent='Agent name is required.';
+    return;
+  }
+  if(!host){
+    banner.style.display='block';
+    banner.style.background='#7f1d1d';
+    banner.textContent='Hostname is required.';
+    return;
+  }
+  if(!port || port <=0){
+    banner.style.display='block';
+    banner.style.background='#7f1d1d';
+    banner.textContent='Port must be a valid number.';
+    return;
+  }
+
+  try{ metadata = JSON.parse(metadata||"{}"); }
+  catch(e){
+    banner.style.display='block';
+    banner.style.background='#7f1d1d';
+    banner.textContent='Metadata must be valid JSON.';
+    return;
+  }
+
+  try{
+    const res = await fetch(API_BASE+"/api/agents/register",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x_admin_token": localStorage.getItem("api_token")
+      },
+      body: JSON.stringify({
+        agent_name:name,
+        hostname:host,
+        port:port,
+        metadata:metadata,
+        reg_secret:"Simple-key"
+      })
+    });
+
+    const txt=await res.text();
+
+    if(res.ok){
+      banner.style.display='block';
+      banner.style.background='#14532d';
+      banner.textContent='Agent registered successfully! Redirecting...';
+      setTimeout(()=>{window.location.href="/ui";},1000);
+    } else {
+      banner.style.display='block';
+      banner.style.background='#7f1d1d';
+      banner.textContent='Registration failed: '+txt;
+    }
+
+  }catch(err){
+    banner.style.display='block';
+    banner.style.background='#7f1d1d';
+    banner.textContent='Error: '+err.message;
+  }
+}
+</script>
+
+</body>
+</html>
