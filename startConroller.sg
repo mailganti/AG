@@ -1,0 +1,23 @@
+if [[ "X$(ps -ef| grep uvicorn | grep controller | awk -F" " '{print $2}')" != "X" ]]
+then
+kill -9 $(ps -ef| grep uvicorn | grep controller | awk -F" " '{print $2}')
+fi
+
+export CONTROLLER_HOST=$(hostname -a)
+export CONTROLLER_PORT=7604
+
+export DB_FILE=/ADMIN/Oracle/Toolkits/Clone/tools/python/ssaAgent/controller/controller_data/controller.db
+export ADMIN_TOKEN=$(cat /ADMIN/Oracle/Toolkits/Clone/tools/python/ssaAgent/controller/admin.token)
+export AGENT_API_KEY=$(cat /ADMIN/Oracle/Toolkits/Clone/tools/python/ssaAgent/controller/api.key)
+export CONTROLLER_TOKEN='controller-secure-token'
+export API_KEY_ENCRYPTION_KEY='bXlzdXBlcnNlY3JldGtleWFwcGtleQ=='
+export HEARTBEAT_INTERVAL=30
+export FERNET_KEY='F19tgVZv_Ku69y-spG9CpdK3gJH-M039sZCWqJPA5JU='
+export CONTROLLER_PORT=7604
+#export AGENT_REG_SECRET='F19tgVZv_Ku69y-spG9CpdK3gJH-M039sZCWqJPA5JU='
+export AGENT_REG_SECRET=Simple-key
+export API_BASE=$(echo http://$CONTROLLER_HOST:$CONTROLLER_PORT)
+
+cd /ADMIN/Oracle/Toolkits/Clone/tools/python/ssaAgent
+
+nohup uvicorn controller.controller:app --host $(hostname) --port $CONTROLLER_PORT  >> Controller.out &
