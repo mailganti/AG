@@ -18,3 +18,15 @@ async def debug_headers(x_admin_token: str = Header(None)):
         "token_received": x_admin_token,
         "message": "Check if token is being received"
     }
+
+
+
+
+
+
+try:
+    from api.workflows_simple import router as workflows_router
+    app.include_router(workflows_router, prefix="/api/workflows")
+    print("✅ Simple workflows routes mounted")
+except Exception as e:
+    print(f"❌ Simple workflows failed: {e}")
