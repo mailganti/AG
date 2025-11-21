@@ -1,0 +1,20 @@
+from fastapi import APIRouter, Header, HTTPException
+
+router = APIRouter()
+
+# Completely open endpoint for testing
+@router.get("/")
+async def get_workflows():
+    return [{"id": "test-wf-1", "status": "pending", "message": "NO AUTH"}]
+
+@router.get("/test")
+async def test_endpoint():
+    return {"message": "Test endpoint working"}
+
+# Endpoint that shows headers
+@router.get("/debug")
+async def debug_headers(x_admin_token: str = Header(None)):
+    return {
+        "token_received": x_admin_token,
+        "message": "Check if token is being received"
+    }
