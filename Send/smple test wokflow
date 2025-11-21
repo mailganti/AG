@@ -30,3 +30,54 @@ try:
     print("✅ Simple workflows routes mounted")
 except Exception as e:
     print(f"❌ Simple workflows failed: {e}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from fastapi import APIRouter, Header, HTTPException, Request
+import json
+
+router = APIRouter()
+
+# Debug endpoint to see the actual request
+@router.api_route("/debug", methods=["GET", "POST", "OPTIONS"])
+async def debug_workflows(request: Request, x_admin_token: str = Header(None)):
+    print("=== WORKFLOWS DEBUG ===")
+    print(f"Method: {request.method}")
+    print(f"Headers: {dict(request.headers)}")
+    print(f"x_admin_token: {x_admin_token}")
+    print("======================")
+    
+    return {
+        "method": request.method,
+        "headers": dict(request.headers),
+        "x_admin_token_received": x_admin_token,
+        "message": "Debug endpoint"
+    }
+
+# Simple test endpoint without complex validation
+@router.get("/test")
+async def test_workflows(x_admin_token: str = Header(None)):
+    print(f"Test endpoint - Token: {x_admin_token}")
+    if not x_admin_token:
+        raise HTTPException(status_code=402, detail="Token missing")
+    return [{"id": "test-wf", "status": "pending"}]
+
+# Your existing endpoints...
+@router.get("/")
+async def get_workflows(x_admin_token: str = Header(None)):
+    if not x_admin_token:
+        raise HTTPException(status_code=402, detail="Token missing")
+    return [{"id": "wf1", "status": "pending"}]
